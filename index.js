@@ -11,7 +11,7 @@ app.use(json());
 app.use("/", routes);
 
 const port = process.env.PORT || 3030;
-const DbURI = process.env.DbURI;
+// const DbURI = process.env.DbURI;
 
 // mongoose
 //   .connect(DbURI)
