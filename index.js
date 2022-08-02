@@ -11,12 +11,12 @@ app.use(json());
 app.use("/", routes);
 
 const port = process.env.PORT || 3030;
-// const DbURI = process.env.DbURI;
+const DbURI = process.env.DbURI;
 
-// mongoose
-//   .connect(DbURI)
-//   .then(() => console.log("connected to DB"))
-//   .catch((err) => console.log(err));
+mongoose
+  .connect(DbURI)
+  .then(() => console.log("connected to DB"))
+  .catch((err) => console.log(0, err));
 
 app.listen(port, (err) => {
   if (err) console.log(err);
