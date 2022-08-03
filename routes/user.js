@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const userControllers = require("../controllers/userController");
 const { check } = require("express-validator");
-const auth = require("../middlewares/auth");
+const { verifyJwt } = require("../middlewares/auth");
+const userControllers = require("../controllers/userController");
 
 router.get("/", userControllers.home);
 
 router.post(
-  "/auth/register",
+  "/api/register",
   [
     check("email", "Please enter a valid email").isEmail(),
     check("password", "A valid password is required").exists(),
@@ -18,7 +18,7 @@ router.post(
 );
 
 router.post(
-  "/auth/login",
+  "/api/login",
   [
     check("email", "Please enter a valid email").isEmail(),
     check("password", "A valid password is required").exists(),
@@ -26,6 +26,21 @@ router.post(
   userControllers.login
 );
 
-router.get("/getLoggedInUser", auth, userControllers.getLoggedInUser);
+router.get("/api/getLoggedInUser", verifyJwt, userControllers.getLoggedInUser);
+
+router.post(
+  "/api/logout",
+  [check("email", "Please enter a valid email").isEmail()],
+  userControllers.logout
+);
+
+router.get("/api/auth/admin", verifyJwt, userControllers.admin);
+
+router.post(
+  "/api/password-reset-request",
+  userControllers.passwordResetRequest
+);
+
+router.get("/api/passwordReset", userControllers.passwordReset);
 
 module.exports = router;

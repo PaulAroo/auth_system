@@ -1,5 +1,5 @@
-const { json } = require("express");
 const express = require("express");
+const { json } = require("express");
 const mongoose = require("mongoose");
 const routes = require("./routes/user");
 require("dotenv").config();

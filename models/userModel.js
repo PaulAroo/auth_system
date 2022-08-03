@@ -23,6 +23,10 @@ const UserSchema = mongoose.Schema(
       enum: ["user", "staff", "manager", "admin", "not_assigned"],
       default: "not_assigned",
     },
+    token: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
