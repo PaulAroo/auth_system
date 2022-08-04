@@ -66,7 +66,6 @@ const login = async (req, res) => {
 
     let token = user.token;
     if (!user.token) {
-      console.log(0000000);
       const payload = {
         user: {
           id: user.id,
@@ -95,22 +94,6 @@ const login = async (req, res) => {
   }
 };
 
-// @route		GET api/getLoggedInUser
-// @desc		get details of logged in user
-// @access	Authenticated user ("Authorization" required in Header)
-const getLoggedInUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password");
-    res.status(200).json({
-      message: "user gotten successfully",
-      user,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("server error");
-  }
-};
-
 // @route		POST api/logout
 // @desc		log out a user (deletes token)
 const logout = (req, res) => {
@@ -128,10 +111,7 @@ const logout = (req, res) => {
   });
 };
 
-const admin = (req, res) => {
-  res.send(req.user.role);
-};
-
+//  @route		POST api/password-reset-request
 const passwordResetRequest = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -161,6 +141,9 @@ const passwordResetRequest = async (req, res) => {
   );
 };
 
+// @route GET api/passwordReset
+//  for now, new password value is hardcoded
+// TODO: implement a view(with handlebars) that allow users to actually type in a new password
 const passwordReset = async (req, res) => {
   console.log("error");
   const password = req.body.password || "abc";
@@ -188,13 +171,50 @@ const passwordReset = async (req, res) => {
   await passwordResetToken.deleteOne();
 };
 
+// @route		GET api/auth/user
+const getUser = async (req, res) => {
+  verifyRolePermissionAndFetchAllUsersWithMatchingRoles(req, res, "user");
+};
+
+// @route		GET api/auth/staff
+const getStaff = (req, res) => {
+  verifyRolePermissionAndFetchAllUsersWithMatchingRoles(req, res, "staff");
+};
+
+// @route		GET api/auth/manager
+const getManager = async (req, res) => {
+  verifyRolePermissionAndFetchAllUsersWithMatchingRoles(req, res, "manager");
+};
+
+// @route		GET api/auth/admin
+const getAdmin = async (req, res) => {
+  verifyRolePermissionAndFetchAllUsersWithMatchingRoles(req, res, "admin");
+};
+
+async function verifyRolePermissionAndFetchAllUsersWithMatchingRoles(
+  req,
+  res,
+  role
+) {
+  const userRole = req.user.role;
+  if (userRole !== role) {
+    return res.status(401).json({
+      message: `a ${userRole} cannot access this route, only ${role}s can`,
+    });
+  }
+  const user = await User.find({ userRole: role }).select("-password");
+  res.status(200).json({ ...user });
+}
+
 module.exports = {
+  getUser,
+  getStaff,
+  getAdmin,
+  getManager,
   home,
-  admin,
   login,
   logout,
   register,
   passwordReset,
-  getLoggedInUser,
   passwordResetRequest,
 };

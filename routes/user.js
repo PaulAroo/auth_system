@@ -26,15 +26,11 @@ router.post(
   userControllers.login
 );
 
-router.get("/api/getLoggedInUser", verifyJwt, userControllers.getLoggedInUser);
-
 router.post(
   "/api/logout",
   [check("email", "Please enter a valid email").isEmail()],
   userControllers.logout
 );
-
-router.get("/api/auth/admin", verifyJwt, userControllers.admin);
 
 router.post(
   "/api/password-reset-request",
@@ -42,5 +38,13 @@ router.post(
 );
 
 router.get("/api/passwordReset", userControllers.passwordReset);
+
+router.get("/api/auth/user", verifyJwt, userControllers.getUser);
+
+router.get("/api/auth/staff", verifyJwt, userControllers.getStaff);
+
+router.get("/api/auth/manager", verifyJwt, userControllers.getManager);
+
+router.get("/api/auth/admin", verifyJwt, userControllers.getAdmin);
 
 module.exports = router;
